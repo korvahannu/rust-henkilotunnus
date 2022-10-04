@@ -1,0 +1,13 @@
+[package]
+name = "rust-henkilotunnus"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+description = "Rust -kirjasto, jonka avulla voidaan hallita suomalaisia henkilötunnuksia."
+
+[lib]
+path = "src/lib.rs"
+
+[[bin]]
+path = "src/main.rs"
+name = "dwebpa"
