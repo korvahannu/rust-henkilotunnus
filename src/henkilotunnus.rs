@@ -12,9 +12,9 @@ const HENKILOTUNNUS_LENGTH: usize = 11;
 #[derive(Debug)]
 pub struct Henkilotunnus {
     pub henkilotunnus: String,
-    pub year: String,
-    pub month: String,
-    pub day_of_month: String,
+    pub year: usize,
+    pub month: usize,
+    pub day_of_month: usize,
     pub century: char,
     pub checksum: char,
     pub id: String,
@@ -36,17 +36,12 @@ impl Henkilotunnus {
 
         let day_of_month;
 
-        match substring(&henkilotunnus, 0, 2).parse::<u8>() {
+        match substring(&henkilotunnus, 0, 2).parse::<usize>() {
             Ok(x) => {
                 if x < 1 || x > 31 {
                     return Err("Invalid day of month (under 1 or over 31)");
                 }
-
-                if x < 10 {
-                    day_of_month = format!("0{}", x.to_string());
-                } else {
-                    day_of_month = x.to_string()
-                }
+                day_of_month = x;
             }
             Err(_) => {
                 return Err("Unable to parse day of month");
@@ -55,35 +50,16 @@ impl Henkilotunnus {
 
         let month;
 
-        match substring(&henkilotunnus, 2, 2).parse::<u8>() {
+        match substring(&henkilotunnus, 2, 2).parse::<usize>() {
             Ok(x) => {
                 if x < 1 || x > 12 {
                     return Err("Invalid month (under 1 or over 31)");
                 }
 
-                if x < 10 {
-                    month = format!("0{}", x.to_string());
-                } else {
-                    month = x.to_string()
-                }
+                month = x;
             }
             Err(_) => {
                 return Err("Unable to parse month");
-            }
-        }
-
-        let year;
-
-        match substring(&henkilotunnus, 4, 2).parse::<u8>() {
-            Ok(x) => {
-                if x < 10 {
-                    year = format!("0{}", x.to_string());
-                } else {
-                    year = x.to_string()
-                }
-            }
-            Err(_) => {
-                return Err("Unable to parse year");
             }
         }
 
@@ -99,6 +75,26 @@ impl Henkilotunnus {
 
         if century != '+' && century != '-' && century != 'A' {
             return Err("Invalid century");
+        }
+
+        let two_digit_year;
+        let mut year;
+
+        match substring(&henkilotunnus, 4, 2).parse::<usize>() {
+            Ok(x) => {
+                year = x;
+                two_digit_year = x;
+
+                match century {
+                    '+' => year += 1800,
+                    '-' => year += 1900,
+                    'A' => year += 2000,
+                    _ => {}
+                }
+            }
+            Err(_) => {
+                return Err("Unable to parse year");
+            }
         }
 
         let checksum;
@@ -142,11 +138,9 @@ impl Henkilotunnus {
             }
         }
 
-        let calculated_checksum = (id.parse::<usize>().unwrap()
-            + year.parse::<usize>().unwrap() * 1000
-            + month.parse::<usize>().unwrap() * 100000
-            + day_of_month.parse::<usize>().unwrap() * 10000000)
-            % 31;
+        let calculated_checksum =
+            (id.parse::<usize>().unwrap() + two_digit_year * 1000 + month * 100000 + day_of_month * 10000000)
+                % 31;
         let mut checksum_chars = "0123456789ABCDEFHJKLMNPRSTUVWXY".chars();
         if checksum_chars.nth(calculated_checksum).unwrap() != checksum {
             return Err("Checksum and id mismatch");
@@ -184,22 +178,6 @@ Gender: {}",
             &self.id,
             &self.gender,
         )
-    }
-
-    /// Returns the full year of struct Henkilotunnus as type usize
-    pub fn full_year_as_usize(&self) -> usize {
-        let mut output: usize = 0;
-
-        output += &self.year.parse::<usize>().unwrap();
-
-        match &self.century {
-            '+' => output += 1800,
-            '-' => output += 1900,
-            'A' => output += 2000,
-            _ => {}
-        }
-
-        output
     }
 }
 
