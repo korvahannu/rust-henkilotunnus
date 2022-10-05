@@ -19,12 +19,12 @@ pub struct Henkilotunnus {
     pub checksum: char,
     pub id: String,
     pub gender: char,
-    _private: ()
+    _private: (),
 }
 
 impl Henkilotunnus {
     /// Constructs a new `Henkilotunnus`.
-    /// 
+    ///
     /// Returns Err(&str) if the given string representing the henkilotunnus is invalid
     /// Returns Ok(Henkilotunnus) if the given string representing the henkilotunnus is valid
     pub fn from(mut henkilotunnus: String) -> Result<Henkilotunnus, &'static str> {
@@ -118,13 +118,12 @@ impl Henkilotunnus {
 
         match id.parse::<u16>() {
             Ok(x) => {
-
-                if x < 1  {
+                if x < 1 {
                     return Err("Unable to parse id");
                 }
 
                 id_number = x;
-            },
+            }
             Err(_) => {
                 return Err("Unable to parse id");
             }
@@ -134,16 +133,20 @@ impl Henkilotunnus {
         match id_number & 1 {
             0 => {
                 gender = 'f';
-            },
+            }
             1 => {
                 gender = 'm';
-            },
+            }
             _ => {
                 return Err("Unable to figure out gender");
             }
         }
 
-        let calculated_checksum = (id.parse::<usize>().unwrap() + year.parse::<usize>().unwrap() * 1000 + month.parse::<usize>().unwrap() * 100000 + day_of_month.parse::<usize>().unwrap() * 10000000) % 31;
+        let calculated_checksum = (id.parse::<usize>().unwrap()
+            + year.parse::<usize>().unwrap() * 1000
+            + month.parse::<usize>().unwrap() * 100000
+            + day_of_month.parse::<usize>().unwrap() * 10000000)
+            % 31;
         let mut checksum_chars = "0123456789ABCDEFHJKLMNPRSTUVWXY".chars();
         if checksum_chars.nth(calculated_checksum).unwrap() != checksum {
             return Err("Checksum and id mismatch");
@@ -158,12 +161,13 @@ impl Henkilotunnus {
             checksum,
             id,
             gender,
-            _private: ()
+            _private: (),
         })
     }
 
     pub fn to_string(&self) -> String {
-        format!("Henkilotunnus: {}
+        format!(
+            "Henkilotunnus: {}
 Year: {}
 Month: {}
 Day of month: {}

@@ -29,6 +29,7 @@ mod tests {
     fn test_invalid_henkilotunnus() -> Result<(), ()> {
         let henkilotunnukset = vec![
             "010181-900",
+            "010181-900HA",
             "010100A96H",
             "311299-94Y",
             "040822A456",
