@@ -68,7 +68,7 @@ impl Henkilotunnus {
             Some(x) => {
                 century = x;
             }
-            None => {
+            _ => {
                 return Err("Unable to parse century");
             }
         }
@@ -105,7 +105,7 @@ impl Henkilotunnus {
             Some(x) => {
                 checksum = x;
             }
-            None => {
+            _ => {
                 return Err("Unable to parse checksum");
             }
         }
@@ -147,9 +147,9 @@ impl Henkilotunnus {
         if checksum_chars.nth(calculated_checksum).unwrap() != checksum {
             return Err("Checksum and id mismatch");
         }
-
+        
         Ok(Henkilotunnus {
-            henkilotunnus: henkilotunnus,
+            henkilotunnus,
             year,
             month,
             day_of_month,
