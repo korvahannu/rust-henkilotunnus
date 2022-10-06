@@ -89,7 +89,9 @@ impl Henkilotunnus {
                     '+' => year += 1800,
                     '-' => year += 1900,
                     'A' => year += 2000,
-                    _ => {}
+                    _ => {
+                        return Err("Unable to parse year");
+                    }
                 }
             }
             Err(_) => {
