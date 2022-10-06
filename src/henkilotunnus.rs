@@ -53,7 +53,7 @@ impl Henkilotunnus {
         match substring(&henkilotunnus, 2, 2).parse::<usize>() {
             Ok(x) => {
                 if x < 1 || x > 12 {
-                    return Err("Invalid month (under 1 or over 31)");
+                    return Err("Invalid month (under 1 or over 12)");
                 }
 
                 month = x;
