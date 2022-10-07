@@ -140,14 +140,16 @@ impl Henkilotunnus {
             }
         }
 
-        let calculated_checksum =
-            (id.parse::<usize>().unwrap() + two_digit_year * 1000 + month * 100000 + day_of_month * 10000000)
-                % 31;
+        let calculated_checksum = (id.parse::<usize>().unwrap()
+            + two_digit_year * 1000
+            + month * 100000
+            + day_of_month * 10000000)
+            % 31;
         let mut checksum_chars = "0123456789ABCDEFHJKLMNPRSTUVWXY".chars();
         if checksum_chars.nth(calculated_checksum).unwrap() != checksum {
             return Err("Checksum and id mismatch");
         }
-        
+
         Ok(Henkilotunnus {
             henkilotunnus,
             year,
