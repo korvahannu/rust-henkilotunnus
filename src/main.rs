@@ -11,7 +11,7 @@ fn main() {
             match Henkilotunnus::from(input.trim_end().to_string()) {
                 Ok(hetu) => {
                     // Given henkilotunnus is valid
-                    println!("{}", hetu.to_string());
+                    println!("{}", hetu.get_info_string());
                 }
                 Err(message) => {
                     // Given henkilotunnus is invalid

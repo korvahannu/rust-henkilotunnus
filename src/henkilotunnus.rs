@@ -10,6 +10,7 @@ const HENKILOTUNNUS_LENGTH: usize = 11;
 /// id: Used to validate henkilotunnus and to check gender
 /// gender: Gender of the person in question f/m
 #[derive(Debug)]
+#[non_exhaustive]
 pub struct Henkilotunnus {
     pub henkilotunnus: String,
     pub year: usize,
@@ -19,7 +20,7 @@ pub struct Henkilotunnus {
     pub checksum: char,
     pub id: String,
     pub gender: char,
-    _private: (),
+    _private: ()
 }
 
 impl Henkilotunnus {
@@ -34,44 +35,37 @@ impl Henkilotunnus {
 
         henkilotunnus = henkilotunnus.to_uppercase();
 
-        let day_of_month;
-
-        match substring(&henkilotunnus, 0, 2).parse::<usize>() {
+        let day_of_month = match substring(&henkilotunnus, 0, 2).parse::<usize>() {
             Ok(x) => {
-                if x < 1 || x > 31 {
+                if !(1..=31).contains(&x) {
                     return Err("Invalid day of month (under 1 or over 31)");
                 }
-                day_of_month = x;
+                x
             }
             Err(_) => {
                 return Err("Unable to parse day of month");
             }
-        }
+        };
 
-        let month;
-
-        match substring(&henkilotunnus, 2, 2).parse::<usize>() {
+        let month = match substring(&henkilotunnus, 2, 2).parse::<usize>() {
             Ok(x) => {
-                if x < 1 || x > 12 {
+                if !(1..=12).contains(&x) {
                     return Err("Invalid month (under 1 or over 12)");
                 }
 
-                month = x;
+                x
             }
             Err(_) => {
                 return Err("Unable to parse month");
             }
-        }
+        };
 
-        let century;
-        match henkilotunnus.chars().nth(6) {
-            Some(x) => {
-                century = x;
-            }
+        let century = match henkilotunnus.chars().nth(6) {
+            Some(x) => x,
             _ => {
                 return Err("Unable to parse century");
             }
-        }
+        };
 
         if century != '+' && century != '-' && century != 'A' {
             return Err("Invalid century");
@@ -99,46 +93,35 @@ impl Henkilotunnus {
             }
         }
 
-        let checksum;
-
-        match henkilotunnus.chars().nth(10) {
-            Some(x) => {
-                checksum = x;
-            }
+        let checksum = match henkilotunnus.chars().nth(10) {
+            Some(x) => x,
             _ => {
                 return Err("Unable to parse checksum");
             }
-        }
+        };
 
         let id = substring(&henkilotunnus, 7, 3);
 
-        let id_number;
-
-        match id.parse::<u16>() {
+        let id_number = match id.parse::<u16>() {
             Ok(x) => {
                 if x < 1 {
                     return Err("Unable to parse id");
                 }
 
-                id_number = x;
+                x
             }
             Err(_) => {
                 return Err("Unable to parse id");
             }
-        }
+        };
 
-        let gender;
-        match id_number & 1 {
-            0 => {
-                gender = 'f';
-            }
-            1 => {
-                gender = 'm';
-            }
+        let gender = match id_number & 1 {
+            0 => 'f',
+            1 => 'm',
             _ => {
                 return Err("Unable to figure out gender");
             }
-        }
+        };
 
         let calculated_checksum = (id.parse::<usize>().unwrap()
             + two_digit_year * 1000
@@ -159,11 +142,11 @@ impl Henkilotunnus {
             checksum,
             id,
             gender,
-            _private: (),
+            _private: ()
         })
     }
 
-    pub fn to_string(&self) -> String {
+    pub fn get_info_string(&self) -> String {
         format!(
             "Henkilotunnus: {}
 Year: {}
@@ -185,7 +168,7 @@ Gender: {}",
     }
 }
 
-fn substring(string_to_parse: &String, start: usize, how_many_to_take: usize) -> String {
+fn substring(string_to_parse: &str, start: usize, how_many_to_take: usize) -> String {
     string_to_parse
         .chars()
         .skip(start)
